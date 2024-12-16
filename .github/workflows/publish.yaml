@@ -1,4 +1,4 @@
-name: Create and publish a Docker image
+name: Publish image and deploy
 
 on:
   push:
@@ -51,3 +51,15 @@ jobs:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.push.outputs.digest }}
           push-to-registry: true
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: ssh and run reployment script
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          script: cd ${{ secrets.PATH }} && ./redeploy.sh

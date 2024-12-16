@@ -1,0 +1,10 @@
+.env.example
+.env
+.eslintrc.cjs
+.gitignore
+prettier.config.js
+README.md
+node_modules
+.dockerignore
+start-database.sh
+.next

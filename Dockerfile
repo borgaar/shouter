@@ -19,6 +19,8 @@ FROM node:current-alpine AS runner
 WORKDIR /app
 
 RUN apk add openssl
+# Prisma is used in prod deployment
+RUN npm install -g prisma
 
 COPY --from=build /build/.next/standalone ./
 RUN rm -f .env

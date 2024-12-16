@@ -59,14 +59,13 @@ jobs:
     steps:
       - name: Set up SSH key
         run: |
-          env
           mkdir -p ~/.ssh
           echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
       - name: Deploy to server
         run: |
-          ssh -v ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'ENDSSH'
+          ssh -v -i .ssh/id_rsa ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'ENDSSH'
           cd ${{ secrets.PATH }}
           ./redeploy.sh
           ENDSSH

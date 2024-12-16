@@ -59,9 +59,14 @@ jobs:
     steps:
       - name: ssh and run reployment script
         uses: appleboy/ssh-action@v1.2.0
+        env:
+          PATH: "/usr/bin"
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          script: cd ${{ secrets.PATH }} && ./redeploy.sh
+          envs: PATH
+          script: |
+            cd ${{ secrets.PATH }}
+            ./redeploy.sh

@@ -63,4 +63,4 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
-          script: sh -c "cd ${{ secrets.PATH }} && bash redeploy.sh"
+          script_path: ${{ secrets.PATH }}/redeploy.sh

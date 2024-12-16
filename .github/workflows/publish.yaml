@@ -9,53 +9,53 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  # build-and-push-image:
-  #   name: Build and push Docker image
-  #   runs-on: ubuntu-latest
-  #   permissions:
-  #     contents: read
-  #     packages: write
-  #     attestations: write
-  #     id-token: write
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-  #     - name: Log in to the Container registry
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ${{ env.REGISTRY }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #     - name: Read version from package.json
-  #       id: version
-  #       run: |
-  #         PACKAGE_VERSION=$(node -p "require('./package.json').version")
-  #         echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
-  #     - name: Extract metadata (tags, labels) for Docker
-  #       id: meta
-  #       uses: docker/metadata-action@v5
-  #       with:
-  #         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-  #         tags: |
-  #           type=raw,value=${{ steps.version.outputs.version }}
-  #           type=raw,value=latest
-  #     - name: Build and push Docker image
-  #       id: push
-  #       uses: docker/build-push-action@v6
-  #       with:
-  #         context: .
-  #         push: true
-  #         tags: ${{ steps.meta.outputs.tags }}
-  #     - name: Generate artifact attestation
-  #       uses: actions/attest-build-provenance@v2
-  #       with:
-  #         subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-  #         subject-digest: ${{ steps.push.outputs.digest }}
-  #         push-to-registry: true
+  build-and-push-image:
+    name: Build and push Docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Read version from package.json
+        id: version
+        run: |
+          PACKAGE_VERSION=$(node -p "require('./package.json').version")
+          echo "version=$PACKAGE_VERSION" >> $GITHUB_OUTPUT
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.version.outputs.version }}
+            type=raw,value=latest
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    # needs: build-and-push-image
+    needs: build-and-push-image
     steps:
       - name: Set up SSH key
         run: |
@@ -63,10 +63,10 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -p 22 ${{ secrets.HOST }} >> ~/.ssh/known_hosts
+          ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
       - name: Deploy to server
         run: |
-          ssh -v -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'ENDSSH'
+          ssh -v ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'ENDSSH'
           cd ${{ secrets.PATH }}
           ./redeploy.sh
           ENDSSH

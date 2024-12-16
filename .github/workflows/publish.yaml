@@ -66,6 +66,7 @@ jobs:
           ssh-keyscan -p 22 ${{ secrets.HOST }} >> ~/.ssh/known_hosts
       - name: Deploy to server
         run: |
-          ssh -v -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }}:${{ secrets.PATH }} << 'ENDSSH'
+          ssh -v -o StrictHostKeyChecking=no ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'ENDSSH'
+          cd ${{ secrets.PATH }}
           ./redeploy.sh
           ENDSSH

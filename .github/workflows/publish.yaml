@@ -65,7 +65,5 @@ jobs:
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            echo "Hello, world!"
-          #script: |
-          # cd ${{ secrets.PATH }}
-          # ./redeploy.sh
+            cd ${{ secrets.PATH }}
+            bash redeploy.sh

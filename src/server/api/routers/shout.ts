@@ -8,6 +8,7 @@ import {
 
 const getShoutsOutput = z.array(
   z.object({
+    id: z.string(),
     user: z.object({
       image: z.string(),
       name: z.string(),
@@ -44,6 +45,7 @@ export const postRouter = createTRPCRouter({
       });
 
       return shouts.map((s) => ({
+        id: s.id,
         user: {
           name: s.shouter.name ?? "",
           image: s.shouter.image ?? "",

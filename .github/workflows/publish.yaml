@@ -64,10 +64,9 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.KEY }}" > ~/.ssh/key
+          chmod 600 ~/.ssh/key
           ssh-keyscan ${{ secrets.HOST }} >> ~/.ssh/known_hosts
-          ssh-add -v ~/.ssh/id_rsa
 
       - name: Create .env file
         run: |
@@ -79,11 +78,11 @@ jobs:
 
       - name: Copy docker-compose.yml, Makefile, and .env to VPS
         run: |
-          scp -v docker-compose.yml Makefile .env ${{ secrets.USERNAME }}@${{ secrets.HOST }}:${{ secrets.PATH }}
+          scp -v -i ~/.ssh/key docker-compose.yml Makefile .env ${{ secrets.USERNAME }}@${{ secrets.HOST }}:${{ secrets.PATH }}
 
       - name: Deploy to VPS
         run: |
-          ssh -v ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'ENDSSH'
+          ssh -v -i ~/.ssh/key ${{ secrets.USERNAME }}@${{ secrets.HOST }} << 'ENDSSH'
           cd ${{ secrets.PATH }}
           make prod
           ENDSSH

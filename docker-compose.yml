@@ -1,6 +1,6 @@
 services:
-  web-app:
-    container_name: web-app
+  shouter-dev:
+    container_name: shouter
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,14 +9,59 @@ services:
       - NEXTAUTH_URL=${NEXTAUTH_URL}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=postgresql://postgres:password@db:5432/shouter
+    depends_on:
+      - db
     expose:
       - 3000
     ports:
       - 3000:3000
     networks:
       - shouter_network
+    profiles:
+      - dev
+
+  db:
+    container_name: db
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=shouter
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    volumes:
+      - shouter-data:/var/lib/postgresql/data
+    networks:
+      - shouter_network
+    profiles:
+      - dev
+
+  shouter:
+    container_name: shouter
+    image: ghcr.io/borgaar/shouter:latest
+    environment:
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+    command: sh -c 'prisma migrate deploy && node server.js'
+    expose:
+      - 3000
+    ports:
+      - 4000:3000
+    networks:
+      - shouter_network
+    restart: unless-stopped
+    profiles:
+      - production
 
 networks:
   shouter_network:
-    external: true
+    driver: bridge
+volumes:
+  shouter-data:
+    driver: local

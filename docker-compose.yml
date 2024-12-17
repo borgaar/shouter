@@ -1,6 +1,6 @@
 services:
-  shouter-dev:
-    container_name: shouter
+  web-app:
+    container_name: shouter-web-app
     build:
       context: .
       dockerfile: Dockerfile
@@ -9,9 +9,10 @@ services:
       - NEXTAUTH_URL=${NEXTAUTH_URL}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
-      - DATABASE_URL=postgresql://postgres:password@db:5432/shouter
+      # separate db url due to docker networking (host=database)
+      - DATABASE_URL=postgresql://postgres:password@database:5432/shouter
     depends_on:
-      - db
+      - database
     expose:
       - 3000
     ports:
@@ -21,8 +22,8 @@ services:
     profiles:
       - dev
 
-  db:
-    container_name: db
+  database:
+    container_name: database
     image: postgres:latest
     environment:
       - POSTGRES_USER=postgres
@@ -33,14 +34,14 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - shouter-data:/var/lib/postgresql/data
+      - shouter_data:/var/lib/postgresql/data
     networks:
       - shouter_network
     profiles:
       - dev
 
-  shouter:
-    container_name: shouter
+  shouter-prod:
+    container_name: shouter-web-app
     image: ghcr.io/borgaar/shouter:latest
     environment:
       - AUTH_SECRET=${AUTH_SECRET}
@@ -63,5 +64,5 @@ networks:
   shouter_network:
     driver: bridge
 volumes:
-  shouter-data:
+  shouter_data:
     driver: local

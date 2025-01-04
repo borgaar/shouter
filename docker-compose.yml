@@ -7,7 +7,6 @@ services:
     environment:
       - AUTH_SECRET=${AUTH_SECRET}
       - NEXTAUTH_URL=${NEXTAUTH_URL}
-      - AUTH_URL=http://localhost:3000
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       # separate db url due to docker networking (host=database)
@@ -47,7 +46,6 @@ services:
     environment:
       - AUTH_SECRET=${AUTH_SECRET}
       - NEXTAUTH_URL=${NEXTAUTH_URL}
-      - AUTH_URL=http://localhost:3000
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - DATABASE_URL=${DATABASE_URL}

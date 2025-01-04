@@ -1,17 +1,15 @@
 fresh:
 	- docker compose --profile dev -f docker-compose.yml down
-	- docker image rm shouter-web-app
-	- docker volume rm shouter_shouter_data
-	- docker compose --profile dev -f docker-compose.yml up -d
+	docker compose --profile dev -f docker-compose.yml up -d --build
 	- sleep 2
-	- npx prisma migrate dev
+	- pnpx prisma migrate dev
 
 db:
 	- docker compose --profile dev -f docker-compose.yml down database
 	-	docker volume rm shouter_shouter_data
-	- docker compose --profile dev -f docker-compose.yml up -d database
+	docker compose --profile dev -f docker-compose.yml up -d database
 	- sleep 2
-	- npx prisma migrate dev
+	- pnpx prisma migrate dev
 
 prod:
 	- docker compose --profile production -f docker-compose.yml down

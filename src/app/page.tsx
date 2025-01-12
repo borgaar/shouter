@@ -17,9 +17,14 @@ export default async function Home() {
           {session ? "Sign out" : "Sign in"}
         </Link>
       </div>
-      {session && <CreateShout />}
-      <div className="container flex h-screen max-w-screen-md flex-col items-center justify-center gap-12 bg-primary px-4 py-16">
-        {shouts.map((s) => Shout(s))}
+      {session && <CreateShout key={"create-shout"} />}
+      <div
+        key={"shout-view"}
+        className="container flex h-screen max-w-screen-md flex-col items-center gap-8 px-4 py-16"
+      >
+        {shouts.map((s) => (
+          <Shout key={s.id} {...s} />
+        ))}
       </div>
     </main>
   );
